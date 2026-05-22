@@ -1,38 +1,40 @@
 # MCP-Bridge
 
-> 一个本地 MCP Server，把分布在不同机器、不同网络的三个 AI 客户端接入**同一套工具集**——让它们共享文件、交换消息、互相调用，形成一个协作网络。
+**English** | [中文](README.zh-CN.md)
+
+> A local MCP server that wires three AI clients — spread across different machines and networks — into **one shared toolset**, letting them share files, exchange messages, and invoke one another. A real collaboration network.
 
 `Python 3.12` · `FastMCP` · `164 passed + 3 skipped`
 
 ---
 
-## 这是什么
+## What it is
 
-三个 AI 客户端各自为政：
+Three AI clients, each on its own island:
 
-- **VPS Claude** —— Linux 云服务器上的 Claude Code
-- **Windows Claude Code** —— Windows 本地的 Claude Code
-- **Antigravity** —— Windows 本地的 Antigravity IDE
+- **VPS Claude** —— Claude Code on a Linux cloud server
+- **Windows Claude Code** —— Claude Code on a local Windows machine
+- **Antigravity** —— the Antigravity IDE on the same Windows machine
 
-它们看不到彼此的工作、传不了任务、共享不了上下文。
+They can't see each other's work, can't hand off tasks, can't share context.
 
-**MCP-Bridge** 是一个本地 MCP Server（称为 *bridge*），把三方接进同一套工具集。三个 AI 不再各干各的，而是能共享工作成果、互相传递任务——形成一个真正的协作网络。
+**MCP-Bridge** is a local MCP server (the *bridge*) that connects all three to one shared toolset. The three AIs stop working in isolation — they share results and pass tasks to one another, forming a real collaboration network.
 
 ---
 
-## 架构
+## Architecture
 
 ```
-   VPS (Linux 云服务器)
+   VPS (Linux cloud server)
    ┌──────────────────┐
    │   VPS Claude     │──── HTTPS ────┐
    └──────────────────┘               │
                                        ▼
-                          Cloudflare 全球网络
+                          Cloudflare global network
                           bridge.example.com
                           (tunnel)
                                        │
-   Windows 本地主机                     ▼
+   Windows local host                  ▼
    ┌────────────────────────────────────────────┐
    │  cloudflared ──→ localhost:18800            │
    │                       │                     │
@@ -41,83 +43,83 @@
    │              │  (FastMCP)       │           │
    │              └────────△─────────┘           │
    │                       │                     │
-   │  Windows Claude ───────┤ (localhost 直连)    │
+   │  Windows Claude ───────┤ (direct localhost)  │
    │                       │                     │
-   │  Antigravity ──mcp-proxy┘ (stdio→HTTP 适配)  │
+   │  Antigravity ──mcp-proxy┘ (stdio→HTTP)       │
    └────────────────────────────────────────────┘
 ```
 
-| 决策 | 选择 | 理由 |
+| Decision | Choice | Why |
 |---|---|---|
-| Bridge 部署 | 本地 | 工具大多操作本地资源，必须在本地执行 |
-| 传输 | HTTP Streamable | 多客户端共享同一 server 实例，状态可共享 |
-| 远程接入 | Cloudflare Tunnel | 远程客户端无法直连本地，经隧道接入 |
-| 鉴权 | Bearer token | 简单可靠，适合受信任客户端集合 |
-| Antigravity 接入 | `sparfenyuk/mcp-proxy` 适配器 | Antigravity 的 MCP 客户端只支持 stdio，由 mcp-proxy 桥接到 HTTP |
+| Bridge deployment | Local | Most tools operate on local resources, so they must run locally |
+| Transport | HTTP Streamable | Multiple clients share one server instance with shared state |
+| Remote access | Cloudflare Tunnel | Remote clients can't reach the local host directly; they connect through a tunnel |
+| Auth | Bearer token | Simple and reliable; fits a set of trusted clients |
+| Antigravity integration | `sparfenyuk/mcp-proxy` adapter | Antigravity's MCP client only supports stdio; mcp-proxy bridges it to HTTP |
 
 ---
 
-## 三层跨 AI 协作
+## Three layers of cross-AI collaboration
 
-| 层 | 机制 | 状态 |
+| Layer | Mechanism | Status |
 |---|---|---|
-| **文件共享** | 三方读写同一共享目录 | ✓ |
-| **异步消息** | 结构化 inbox/archive 消息总线，带 reply_to 对话线索 | ✓ |
-| **程序化调用** | 一个 AI 通过 bridge 程序化拉起另一个 AI 的 CLI、同步拿回干净结果 | ✓ |
+| **File sharing** | All three read and write a shared directory | ✓ |
+| **Async messaging** | A structured inbox/archive message bus with `reply_to` threading | ✓ |
+| **Programmatic invocation** | One AI programmatically launches another AI's CLI through the bridge and gets a clean result back synchronously | ✓ |
 
 ---
 
-## 工具集（10 个）
+## Toolset (10 tools)
 
-| # | 工具 | 功能 |
+| # | Tool | Function |
 |---|---|---|
-| 1 | `echo` | 连通性测试 |
-| 2 | `system_status` | CPU/内存/磁盘（刻意排除进程列表、网络接口 IP/MAC）|
-| 3 | `read_file` | 读文件，1MB 上限 + UTF-8 检测（拒二进制）|
-| 4 | `write_file` | 写文件，5MB 上限 + 3 模式 + TOCTOU 防御 + 父目录自动创建 |
-| 5 | `list_dir` | 列目录，5000 条上限 + symlink 仅展示不跟随 |
-| 6 | `invoke_ag_cli` | 程序化调用 Antigravity CLI（`--version` / `ask`）|
-| 7 | `send_message` | 发结构化消息到接收方 inbox（原子写）|
-| 8 | `list_inbox` | 列收件箱消息预览 |
-| 9 | `read_message` | 读消息全文 |
-| 10 | `mark_read` | 消息从 inbox 归档到 archive |
+| 1 | `echo` | Connectivity test |
+| 2 | `system_status` | CPU / memory / disk (deliberately excludes the process list and network interface IPs/MACs) |
+| 3 | `read_file` | Read a file — 1MB cap + UTF-8 detection (rejects binary) |
+| 4 | `write_file` | Write a file — 5MB cap + 3 modes + TOCTOU defense + auto parent-dir creation |
+| 5 | `list_dir` | List a directory — 5000-entry cap + symlinks shown but not followed |
+| 6 | `invoke_ag_cli` | Programmatically invoke the Antigravity CLI (`--version` / `ask`) |
+| 7 | `send_message` | Send a structured message to a recipient's inbox (atomic write) |
+| 8 | `list_inbox` | List inbox message previews |
+| 9 | `read_message` | Read a full message |
+| 10 | `mark_read` | Archive a message from inbox to archive |
 
 ---
 
-## 安全模型
+## Security model
 
-多数 MCP demo 没有安全模型——要么完全开放文件系统，要么靠客户端自律。本项目是**生产级安全设计**，完整规范见 [`SECURITY.md`](SECURITY.md)。
+Most MCP demos have no security model — they either expose the whole filesystem or rely on client goodwill. This project is a **production-grade security design**; the full spec is in [`SECURITY.md`](SECURITY.md) (in Chinese).
 
-**路径安全（文件工具）**
-- `_validate_path` 七步校验，所有文件工具的单一入口，零绕过
-- 路径白名单 + 黑名单（16 条 glob，大小写不敏感）
-- 自写回溯算法实现 glob `**` **真递归**——Python `pathlib.match()` 把 `**` 当单段不递归，曾是一个 CRITICAL 绕过漏洞（攻击者把文件放 `.ssh/sub/key` 即可绕过），由 critic 复审发现并修复
-- symlink resolve 后用真实路径**重新跑**白名单校验；`write_file` 写入后 `resolve()` 重检的 TOCTOU 深度防御
+**Path security (file tools)**
+- `_validate_path` — a 7-step check, the single entry point for every file tool, with zero bypass
+- Path whitelist + blacklist (16 globs, case-insensitive)
+- A hand-written backtracking algorithm gives glob `**` **true recursion** — Python's `pathlib.match()` treats `**` as a single, non-recursive segment, which was a CRITICAL bypass (an attacker could evade the blacklist by placing a file at `.ssh/sub/key`); found and fixed in critic review
+- After a symlink is resolved, the whitelist check is **re-run** on the real path; `write_file` re-resolves after writing as a TOCTOU defense
 
-**命令执行安全（CLI 工具）**
-- 命令白名单 + 参数白名单（外部 API 与内部 argv 解耦）
-- subprocess 硬约束：list args / `shell=False` / stdin 受控 / 按子命令 timeout
-- 进程组隔离 + 进程树清理（timeout 时杀整棵进程树，杜绝孤儿进程）
+**Command-execution security (CLI tools)**
+- Command whitelist + argument whitelist (the external API is decoupled from the internal argv)
+- Subprocess hard constraints: list args / `shell=False` / controlled stdin / per-subcommand timeout
+- Process-group isolation + process-tree cleanup (on timeout, the entire process tree is killed — no orphans)
 
-**审计日志**
-- JSON Lines，按日轮转，每次调用必审计（含被拒绝的攻击尝试）
-- 反泄漏策略：不记文件内容、不记 prompt 原文、不暴露绝对路径
-
----
-
-## 项目是怎么建的
-
-这个项目本身就是一次多 AI 协作的成果——而它要解决的，恰恰就是多 AI 协作。
-
-**核心开发**走双模型工作流：一个"全局者"写 spec、设计架构、做 critic 复审、决定 commit；一个"工作者"严格按 spec 实现代码与测试，两者通过结构化文档协议交接。这套机制经得起检验——critic 二审累计抓出 **1 CRITICAL + 3 HIGH** 及多个 MEDIUM/LOW；中途真翻过一次车（凭空设计了一个不存在的 CLI 子命令），靠机制复盘并复原。
-
-**Windows 端的集成测试、跨平台验证、以及对 Antigravity CLI 行为的研究**，由本地的 Windows Claude 和 Antigravity 各自分担——它们正是 bridge 所连接的三方中的两方。换句话说：一个多 AI 协作的工具，本身就是多 AI 协作建起来的。
-
-> 双模型工作流的完整方法论 → **[dual-model-workflow](https://github.com/Haven16262/dual-model-workflow)**
+**Audit log**
+- JSON Lines, rotated daily; every call is audited (including rejected attack attempts)
+- Anti-leak policy: no file contents, no raw prompts, no absolute paths
 
 ---
 
-## 运行
+## How it was built
+
+This project is itself a product of multi-AI collaboration — and multi-AI collaboration is exactly the problem it solves.
+
+**Core development** ran on a dual-model workflow: an "overseer" wrote specs, designed the architecture, ran critic reviews, and decided when to commit; a "worker" implemented code and tests strictly to spec. The two handed off through a structured document protocol. The mechanism holds up under scrutiny — critic reviews caught **1 CRITICAL + 3 HIGH** plus several MEDIUM/LOW issues; the project once went off the rails (a CLI subcommand was designed that didn't actually exist) and recovered through the process.
+
+**Windows-side integration testing, cross-platform verification, and research into the Antigravity CLI's behavior** were handled by the local Windows Claude and Antigravity themselves — two of the three clients the bridge connects. In other words: a multi-AI collaboration tool, built by multi-AI collaboration.
+
+> The full methodology of the dual-model workflow → **[dual-model-workflow](https://github.com/Haven16262/dual-model-workflow)**
+
+---
+
+## Running it
 
 ```bash
 git clone https://github.com/Haven16262/MCP-Bridge.git
@@ -127,46 +129,45 @@ python -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 
-cp .env.example .env               # 填入 BRIDGE_API_KEY（openssl rand -hex 32）
+cp .env.example .env               # set BRIDGE_API_KEY (openssl rand -hex 32)
 
 python bridge.py
 ```
 
-> **配置提醒：** `bridge/validators.py` 的 Windows 白名单路径含占位符 `YourUsername`，
-> 需改成你自己的用户名（或改成你的实际工作目录）。白名单决定文件工具能访问哪些目录。
+> **Configuration note:** the Windows whitelist paths in `bridge/validators.py` contain the placeholder `YourUsername` — change it to your own username (or to your actual working directories). The whitelist decides which directories the file tools may access.
 
 ---
 
-## 测试
+## Testing
 
 ```bash
 python -m pytest tests/            # 164 passed + 3 skipped
 ```
 
-> 测试需要 `.env` 已配置(`bridge` 在 import 时校验 `BRIDGE_API_KEY`)。只想跑测试可临时设环境变量:`BRIDGE_API_KEY=test python -m pytest tests/`
+> Tests require `.env` to be configured (`bridge` checks `BRIDGE_API_KEY` at import time). To just run the tests, set the variable inline: `BRIDGE_API_KEY=test python -m pytest tests/`
 
-- 单元测试覆盖路径校验、symlink、命令白名单、transcript 提取、消息总线
-- 涉及外部进程/平台的工具另有集成测试（按平台自动 skip）
-- 测试套件在 Linux 和 Windows 双平台无失败
-
----
-
-## 项目状态
-
-核心三层协作（文件共享 / 异步消息 / 程序化调用）已全部打通并验证。
-
-**已知限制：**
-- `invoke_ag_cli("ask")` 拉起的是全新无上下文 AI 实例，非"对话进行中的那个 AI"
-- 消息总线为轮询模型，无实时推送
-- 身份为自报家门（三方共享同一 Bearer token），不防对抗场景
-- 归档消息无自动 TTL 清理
+- Unit tests cover path validation, symlinks, the command whitelist, transcript extraction, and the message bus
+- Tools that touch external processes or platforms have separate integration tests (auto-skipped per platform)
+- The test suite passes with no failures on both Linux and Windows
 
 ---
 
-## 文档
+## Project status
 
-- [`SECURITY.md`](SECURITY.md) —— 安全规范：白名单/黑名单、路径校验流程、各工具 spec、审计策略
+All three collaboration layers (file sharing / async messaging / programmatic invocation) are implemented and verified.
+
+**Known limitations:**
+- `invoke_ag_cli("ask")` spawns a fresh, context-free AI instance — not "the AI you are currently talking to"
+- The message bus is poll-based; there is no real-time push
+- Identity is self-declared (all three clients share one Bearer token); it does not defend against an adversarial setting
+- Archived messages have no automatic TTL cleanup
 
 ---
 
-*MCP-Bridge 是一个个人工程项目。*
+## Documentation
+
+- [`SECURITY.md`](SECURITY.md) —— the security spec (in Chinese): whitelist/blacklist, the path-validation flow, per-tool specs, the audit policy
+
+---
+
+*MCP-Bridge is a personal engineering project.*

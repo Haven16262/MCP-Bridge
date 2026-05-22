@@ -111,7 +111,7 @@ Most MCP demos have no security model — they either expose the whole filesyste
 
 This project is itself a product of multi-AI collaboration — and multi-AI collaboration is exactly the problem it solves.
 
-**Core development** ran on a dual-model workflow:VPS side： an "overseer" wrote specs, designed the architecture, ran critic reviews, and decided when to commit; a "worker" implemented code and tests strictly to spec. The two handed off through a structured document protocol. The mechanism holds up under scrutiny — critic reviews caught **1 CRITICAL + 3 HIGH** plus several MEDIUM/LOW issues; the project once went off the rails (a CLI subcommand was designed that didn't actually exist) and recovered through the process.
+**Core development** ran on a dual-model workflow (VPS side): an "overseer" wrote specs, designed the architecture, ran critic reviews, and decided when to commit; a "worker" implemented code and tests strictly to spec. The two handed off through a structured document protocol. The mechanism holds up under scrutiny — critic reviews caught **1 CRITICAL + 3 HIGH** plus several MEDIUM/LOW issues; the project once went off the rails (a CLI subcommand was designed that didn't actually exist) and recovered through the process.
 
 **Windows-side integration testing, cross-platform verification, and research into the Antigravity CLI's behavior** were handled by the local Windows Claude and Antigravity themselves — two of the three clients the bridge connects. In other words: a multi-AI collaboration tool, built by multi-AI collaboration.
 
@@ -167,6 +167,15 @@ All three collaboration layers (file sharing / async messaging / programmatic in
 ## Documentation
 
 - [`SECURITY.md`](SECURITY.md) —— the security spec: whitelist/blacklist, the path-validation flow, per-tool specs, the audit policy
+
+## Contributors
+
+- **[Haven16262](https://github.com/Haven16262)** — owner; project direction, decisions, coordination
+- **Claude** — overseer of the dual-model workflow + Windows-side integration testing
+- **DeepSeek** — worker of the dual-model workflow
+- **Antigravity** — Antigravity CLI behavior research + Windows-side verification
+
+---
 
 ## License
 

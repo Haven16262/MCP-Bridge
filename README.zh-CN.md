@@ -111,7 +111,7 @@
 
 这个项目本身就是一次多 AI 协作的成果——而它要解决的，恰恰就是多 AI 协作。
 
-**核心开发**走双模型工作流：VPS端：一个"全局者"写 spec、设计架构、做 critic 复审、决定 commit；一个"工作者"严格按 spec 实现代码与测试，两者通过结构化文档协议交接。这套机制经得起检验——critic 二审累计抓出 **1 CRITICAL + 3 HIGH** 及多个 MEDIUM/LOW；中途真翻过一次车（凭空设计了一个不存在的 CLI 子命令），靠机制复盘并复原。
+**核心开发**走双模型工作流（VPS 端）：一个"全局者"写 spec、设计架构、做 critic 复审、决定 commit；一个"工作者"严格按 spec 实现代码与测试，两者通过结构化文档协议交接。这套机制经得起检验——critic 二审累计抓出 **1 CRITICAL + 3 HIGH** 及多个 MEDIUM/LOW；中途真翻过一次车（凭空设计了一个不存在的 CLI 子命令），靠机制复盘并复原。
 
 **Windows 端的集成测试、跨平台验证、以及对 Antigravity CLI 行为的研究**，由本地的 Windows Claude 和 Antigravity 各自分担——它们正是 bridge 所连接的三方中的两方。换句话说：一个多 AI 协作的工具，本身就是多 AI 协作建起来的。
 
@@ -168,6 +168,15 @@ python -m pytest tests/            # 164 passed + 3 skipped
 ## 文档
 
 - [`SECURITY.zh-CN.md`](SECURITY.zh-CN.md) —— 安全规范：白名单/黑名单、路径校验流程、各工具 spec、审计策略
+
+## 贡献者
+
+- **[Haven16262](https://github.com/Haven16262)** —— 项目所有者；方向、决策、协调
+- **Claude** —— 双模型工作流的全局者 + Windows 端集成测试
+- **DeepSeek** —— 双模型工作流的工作者
+- **Antigravity** —— Antigravity CLI 行为研究 + Windows 端验证
+
+---
 
 ## 许可证
 

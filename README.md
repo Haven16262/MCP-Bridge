@@ -168,6 +168,10 @@ All three collaboration layers (file sharing / async messaging / programmatic in
 
 - [`SECURITY.md`](SECURITY.md) —— the security spec (in Chinese): whitelist/blacklist, the path-validation flow, per-tool specs, the audit policy
 
+## License
+
+[MIT](LICENSE) © 2026 Haven16262
+
 ---
 
 *MCP-Bridge is a personal engineering project.*

@@ -169,6 +169,10 @@ python -m pytest tests/            # 164 passed + 3 skipped
 
 - [`SECURITY.md`](SECURITY.md) —— 安全规范：白名单/黑名单、路径校验流程、各工具 spec、审计策略
 
+## 许可证
+
+[MIT](LICENSE) © 2026 Haven16262
+
 ---
 
 *MCP-Bridge 是一个个人工程项目。*

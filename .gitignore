@@ -1,0 +1,26 @@
+# Secrets
+.env
+.env.local
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Code session state (do not track)
+.claude/settings.local.json
+.claude/worktrees/
+
+# Bridge audit log (Phase 2.1 onwards)
+logs/

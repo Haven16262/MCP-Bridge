@@ -88,7 +88,7 @@ They can't see each other's work, can't hand off tasks, can't share context.
 
 ## Security model
 
-Most MCP demos have no security model — they either expose the whole filesystem or rely on client goodwill. This project is a **production-grade security design**; the full spec is in [`SECURITY.md`](SECURITY.md) (in Chinese).
+Most MCP demos have no security model — they either expose the whole filesystem or rely on client goodwill. This project is a **production-grade security design**; the full spec is in [`SECURITY.md`](SECURITY.md).
 
 **Path security (file tools)**
 - `_validate_path` — a 7-step check, the single entry point for every file tool, with zero bypass
@@ -166,7 +166,7 @@ All three collaboration layers (file sharing / async messaging / programmatic in
 
 ## Documentation
 
-- [`SECURITY.md`](SECURITY.md) —— the security spec (in Chinese): whitelist/blacklist, the path-validation flow, per-tool specs, the audit policy
+- [`SECURITY.md`](SECURITY.md) —— the security spec: whitelist/blacklist, the path-validation flow, per-tool specs, the audit policy
 
 ## License
 

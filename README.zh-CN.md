@@ -88,7 +88,7 @@
 
 ## 安全模型
 
-多数 MCP demo 没有安全模型——要么完全开放文件系统，要么靠客户端自律。本项目是**生产级安全设计**，完整规范见 [`SECURITY.md`](SECURITY.md)。
+多数 MCP demo 没有安全模型——要么完全开放文件系统，要么靠客户端自律。本项目是**生产级安全设计**，完整规范见 [`SECURITY.zh-CN.md`](SECURITY.zh-CN.md)。
 
 **路径安全（文件工具）**
 - `_validate_path` 七步校验，所有文件工具的单一入口，零绕过
@@ -167,7 +167,7 @@ python -m pytest tests/            # 164 passed + 3 skipped
 
 ## 文档
 
-- [`SECURITY.md`](SECURITY.md) —— 安全规范：白名单/黑名单、路径校验流程、各工具 spec、审计策略
+- [`SECURITY.zh-CN.md`](SECURITY.zh-CN.md) —— 安全规范：白名单/黑名单、路径校验流程、各工具 spec、审计策略
 
 ## 许可证
 
